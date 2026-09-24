@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API docs — TheDrunkBots Pay Check API</title>
+    <meta name="theme-color" content="#04060a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600&family=Syne:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="stage">
+        <div class="layer" style="perspective:900px">
+        <div class="grid-3d"></div>
+        <div class="grid-pan"></div>
+        <canvas id="particles"></canvas>
+        <div class="scan-overlay"></div>
+      </div>
+      <header>
+        <div class="nav">
+          <a class="brand" href="/">
+            <span class="radar">
+              <svg viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="15" stroke="currentColor" /><path d="M18 18h12" stroke="currentColor" /></svg>
+              <span class="dot"></span>
+            </span>
+            <span>
+              <strong>TheDrunkBots</strong>
+              <small>Pay Check API</small>
+            </span>
+          </a>
+          <div class="links">
+            <span class="clock" id="clock">--:--:-- UTC</span>
+            <a href="/">Dashboard</a>
+            <a class="active" href="/docs">API docs</a>
+          </div>
+        </div>
+        <div class="ticker">
+          <div class="ticker-track">
+            <span>PAY CHECK  ·  SECUREGW  ·  MERCHANT STATUS  ·  TXN_SUCCESS  ·  HTTP 200  ·  PAY CHECK  ·  SECUREGW  ·  MERCHANT STATUS  ·  TXN_SUCCESS  ·  HTTP 200  ·  </span>
+            <span>PAY CHECK  ·  SECUREGW  ·  MERCHANT STATUS  ·  TXN_SUCCESS  ·  HTTP 200  ·  PAY CHECK  ·  SECUREGW  ·  MERCHANT STATUS  ·  TXN_SUCCESS  ·  HTTP 200  ·  </span>
+          </div>
+        </div>
+      </header>
+      <main>
+        <article>
+          <p class="kicker">Reference // SYS.DOCS</p>
+          <h1>API docs</h1>
+          <p class="muted">
+            TheDrunkBots Pay Check API proxies Paytm merchant status. It does not invent success.
+            If Paytm has not recorded the order yet, you get a retryable status — never a fake TXN_SUCCESS.
+          </p>
+
+          <h2>Bot integration</h2>
+          <p class="muted">In CONTENT-X config.py, replace the dead proxy:</p>
+          <div class="panel"><pre>PAYMENT_API_URL = os.environ.get(
+    "PAYMENT_API_URL",
+    "https://YOUR-HOST/"
+)
+# Bot calls: GET {PAYMENT_API_URL}?mid={PAYTM_MID}&oid={order_id}
+# Expects JSON keys: STATUS, ORDERID, TXNAMOUNT, TXNID, BANKTXNID, TXNDATE</pre></div>
+
+          <h2>Endpoints</h2>
+          <div class="hud" style="margin-top:12px"><div class="inner"><p class="mono">GET /?mid={MID}&oid={ORDER_ID}</p><p class="muted">Bot-compatible root.</p></div></div>
+          <div class="hud" style="margin-top:12px"><div class="inner"><p class="mono">GET /api?mid={MID}&oid={ORDER_ID}</p><p class="muted">Preferred API path. Also accepts id, orderId, ORDERID.</p></div></div>
+          <div class="hud" style="margin-top:12px"><div class="inner"><p class="mono">POST /api/verify</p><p class="muted">JSON body: { mid, oid } or { MID, ORDERID }.</p></div></div>
+          <div class="hud" style="margin-top:12px"><div class="inner"><p class="mono">GET /api/health</p><p class="muted">Liveness probe.</p></div></div>
+
+          <h2>Success response</h2>
+          <p class="muted">Always HTTP 200 so the bot never dies on a 404. Read STATUS, not the status code.</p>
+          <div class="panel"><pre>{
+  "TXNID": "...",
+  "BANKTXNID": "...",
+  "ORDERID": "ORD-...",
+  "TXNAMOUNT": "1.00",
+  "STATUS": "TXN_SUCCESS",
+  "RESPCODE": "01",
+  "RESPMSG": "Txn Success",
+  "PAYMENTMODE": "UPI"
+}</pre></div>
+
+          <h2>Python (matches your bot)</h2>
+          <div class="panel"><pre>url = f"{PAYMENT_API_URL}?mid={PAYTM_MID}&oid={order_id}"
+async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+    data = await resp.json(content_type=None)
+if data.get("STATUS") == "TXN_SUCCESS":
+    paid = float(data.get("TXNAMOUNT", 0))</pre></div>
+        </article>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

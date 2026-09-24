@@ -57,9 +57,10 @@
           </p>
 
           <h2>Bot integration</h2>
+          <p class="muted">Add this in config.py/.env:</p>
           <div class="panel"><pre>PAYMENT_API_URL = os.environ.get(
     "PAYMENT_API_URL",
-    "https://YOUR-HOST/"
+    "https://YOUR-HOST.com"
 )
 # Bot calls: GET {PAYMENT_API_URL}?mid={PAYTM_MID}&oid={order_id}
 # Expects JSON keys: STATUS, ORDERID, TXNAMOUNT, TXNID, BANKTXNID, TXNDATE</pre></div>
@@ -83,6 +84,7 @@
   "PAYMENTMODE": "UPI"
 }</pre></div>
 
+          <h2>Python:</h2>
           <div class="panel"><pre>url = f"{PAYMENT_API_URL}?mid={PAYTM_MID}&oid={order_id}"
 async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as resp:
     data = await resp.json(content_type=None)

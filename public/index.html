@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TheDrunkBots Pay Check API</title>
+    <meta name="theme-color" content="#04060a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600&family=Syne:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="stage">
+        <div class="layer" style="perspective:900px">
+        <div class="grid-3d"></div>
+        <div class="grid-pan"></div>
+        <canvas id="particles"></canvas>
+        <div class="scan-overlay"></div>
+      </div>
+      <header>
+        <div class="nav">
+          <a class="brand" href="/">
+            <span class="radar">
+              <svg viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="15" stroke="currentColor" /><path d="M18 18h12" stroke="currentColor" /></svg>
+              <span class="dot"></span>
+            </span>
+            <span>
+              <strong>TheDrunkBots</strong>
+              <small>Pay Check API</small>
+            </span>
+          </a>
+          <div class="links">
+            <span class="clock" id="clock">--:--:-- UTC</span>
+            <a class="active" href="/">Dashboard</a>
+            <a href="/docs">API docs</a>
+          </div>
+        </div>
+        <div class="ticker">
+          <div class="ticker-track">
+            <span>PAY CHECK  ·  SECUREGW  ·  MERCHANT STATUS  ·  TXN_SUCCESS  ·  ORDERID  ·  MID  ·  RETRY x3  ·  HTTP 200  ·  PAY CHECK  ·  SECUREGW  ·  MERCHANT STATUS  ·  TXN_SUCCESS  ·  ORDERID  ·  MID  ·  RETRY x3  ·  HTTP 200  ·  </span>
+            <span>PAY CHECK  ·  SECUREGW  ·  MERCHANT STATUS  ·  TXN_SUCCESS  ·  ORDERID  ·  MID  ·  RETRY x3  ·  HTTP 200  ·  PAY CHECK  ·  SECUREGW  ·  MERCHANT STATUS  ·  TXN_SUCCESS  ·  ORDERID  ·  MID  ·  RETRY x3  ·  HTTP 200  ·  </span>
+          </div>
+        </div>
+      </header>
+      <main>
+        <p class="kicker rise">TheDrunkBots // SYS.ONLINE</p>
+        <h1 class="rise r1">Pay Check API<span class="cursor">_</span></h1>
+        <p class="lede rise r2">
+          Confirm a Paytm collection before the bot grants the plan. Same
+          <span class="mono">?mid=&oid=</span> your bot already polls — retries across
+          gateways so a blip never looks like a failed payment.
+        </p>
+        <div class="actions rise r3">
+          <a class="btn btn-primary" href="/docs">Read API docs</a>
+        </div>
+
+        <div class="grid grid-2" style="margin-top: 2.5rem">
+          <section class="hud" id="query-card">
+            <span class="corner tl"></span><span class="corner tr"></span>
+            <span class="corner bl"></span><span class="corner br"></span>
+            <div class="scan" hidden><i></i></div>
+            <div class="inner">
+              <div style="display:flex;justify-content:space-between;gap:12px">
+                <div>
+                  <p class="kicker">01 // query</p>
+                  <h2>Live lookup</h2>
+                  <p class="muted">Paste MID and the UPI tr order id. Three gateways. Automatic retry.</p>
+                </div>
+                <span class="live"><span class="dot"></span> Live</span>
+              </div>
+              <form id="verify-form">
+                <label>
+                  <span>Merchant ID</span>
+                  <input id="mid" autocomplete="off" spellcheck="false" placeholder="Enter Paytm MID" />
+                </label>
+                <label>
+                  <span>Order ID</span>
+                  <input id="oid" autocomplete="off" spellcheck="false" placeholder="Enter order ID" />
+                </label>
+                <button class="btn btn-primary btn-full" id="go" type="submit" style="margin-top:1rem">Verify payment</button>
+              </form>
+              <p class="log" id="scan-log"></p>
+              <p class="err" id="err"></p>
+            </div>
+          </section>
+
+          <section class="hud" id="result-card">
+            <span class="corner tl"></span><span class="corner tr"></span>
+            <span class="corner bl"></span><span class="corner br"></span>
+            <div id="readout">
+              <div class="inner">
+                <p class="kicker">02 // readout</p>
+                <h2>Awaiting signal</h2>
+                <p class="muted">Successful payments return <span class="mono">STATUS: TXN_SUCCESS</span> — the same JSON your bot already reads.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="hud span-2">
+            <span class="corner tl"></span><span class="corner tr"></span>
+            <span class="corner bl"></span><span class="corner br"></span>
+            <div class="inner">
+              <p class="kicker">03 // drop-in</p>
+              <h2>Bot drop-in</h2>
+              <p class="muted">Same contract: <span class="mono">GET ?mid=&oid=</span>, always HTTP 200, Paytm JSON.</p>
+              <div class="grid grid-2" style="margin-top:1rem">
+                <div class="panel">
+                  <div style="display:flex;justify-content:space-between">
+                    <span class="kicker">config.py / env</span>
+                    <button class="btn btn-ghost" type="button" data-copy="env">Copy</button>
+                  </div>
+                  <pre id="env">PAYMENT_API_URL=https://your-host/</pre>
+                </div>
+                <div class="panel">
+                  <div style="display:flex;justify-content:space-between">
+                    <span class="kicker">Direct API</span>
+                    <button class="btn btn-ghost" type="button" data-copy="apiurl">Copy</button>
+                  </div>
+                  <pre id="apiurl">https://your-host/api?mid=YOUR_MID&oid=ORDER_ID</pre>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="hud span-2">
+            <span class="corner tl"></span><span class="corner tr"></span>
+            <span class="corner bl"></span><span class="corner br"></span>
+            <div class="inner">
+              <p class="kicker">04 // log</p>
+              <h2>Recent lookups</h2>
+              <div id="history"><p class="muted">Verified orders stay on this device only.</p></div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

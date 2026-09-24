@@ -57,7 +57,6 @@
           </p>
 
           <h2>Bot integration</h2>
-          <p class="muted">In CONTENT-X config.py, replace the dead proxy:</p>
           <div class="panel"><pre>PAYMENT_API_URL = os.environ.get(
     "PAYMENT_API_URL",
     "https://YOUR-HOST/"
@@ -84,7 +83,6 @@
   "PAYMENTMODE": "UPI"
 }</pre></div>
 
-          <h2>Python (matches your bot)</h2>
           <div class="panel"><pre>url = f"{PAYMENT_API_URL}?mid={PAYTM_MID}&oid={order_id}"
 async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as resp:
     data = await resp.json(content_type=None)
